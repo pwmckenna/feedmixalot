@@ -20,7 +20,7 @@ var server = http.createServer(function (req, res) {
     };
     //do a bit of url argument validation
     if(!_.isArray(feeds)) {
-        response.writeHead(500, headers);
+        res.writeHead(500, headers);
         res.end();
         return;
     }
