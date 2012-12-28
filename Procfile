@@ -1,1 +1,1 @@
-web: node feedmixalot.js
+web: node web.js

@@ -1,11 +1,15 @@
-/**
- * Module dependencies.
+/*
+ * feedmixalot
+ * https://github.com/pwmckenna/feedmixalot
+ *
+ * Copyright (c) 2012 Patrick Williams
+ * Licensed under the MIT license.
  */
-var http = require('http')
-    , request = require('request')
+
+
+var request = require('request')
     , _ = require('underscore')
     , q = require('q')
-    , url = require('url')
     , libxmljs = require("libxmljs");
 
 //turns the standard node function signature with a callback argument
@@ -59,7 +63,7 @@ var aggregateRssFeedContents = function(feedContents) {
             compiledChannel.addChild(child);
         });
     });
-    ret.resolve(compiledRss);
+    ret.resolve(compiledRss.toString());
     return ret.promise;
 };
 
@@ -73,43 +77,4 @@ var aggregateRssFeedUrls = function(feeds) {
         .then(aggregateRssFeedContents);    
 };
 
-var server = http.createServer(function (req, res) {
-    //url parsing
-    var query = url.parse(req.url, true).query;
-    //only support one argument so far
-    var feeds = query['url'];
-    //feeds will either be a string or an array of strings
-    //if multiple url parameters are specified
-    if(typeof feeds === 'string') {
-        feeds = [feeds];
-    }
-    //support for cross domain requests
-    var headers = {
-        'content-type': 'application/rss+xml; charset=utf-8',
-        'Access-Control-Allow-Origin': '*'
-    };
-    //do a bit of url argument validation
-    if(!_.isArray(feeds)) {
-        response.writeHead(500, headers);
-        res.end();
-        return;
-    }
-
-    //get all the url contents and glob it into a single xml document
-    var aggregateRequest = aggregateRssFeedUrls(feeds);
-    aggregateRequest.then(function(aggregate) {
-        res.writeHead(200, headers);
-        var body = aggregate.toString();
-        res.end(body);
-    }, function(err) {
-        res.writeHead(err, headers);
-        res.end();
-        return;
-    });
-
-});
-
-var port = process.env.PORT || 5000;
-server.listen(port, function() {
-    console.log('listening on port ' + port);    
-});
+module.exports = aggregateRssFeedUrls;
