@@ -52,7 +52,7 @@ var aggregateRssFeedContents = function(feedContents) {
     var compiled = new libxmljs.Document();
     compiledRss = compiled.node('rss');
     compiledRss.attr({
-        'version': '2.0',
+        'version': '1.0',
         'xmlns:atom': 'http://www.w3.org/2005/Atom',
         'xmlns:media': 'http://search.yahoo.com/mrss/'
     });
