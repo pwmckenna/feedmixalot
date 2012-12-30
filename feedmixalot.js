@@ -45,7 +45,7 @@ var parseHttpBodies = function(responses) {
 
 var appendChildNode = function(parent, child) {
     var name = child.name();
-    if(name === 'item') {
+    if(name === 'item' || name === 'link') {
         // The items should all be included as is.
         parent.addChild(child);
     } else if(name === 'description' || name === 'title') {
