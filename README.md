@@ -18,7 +18,10 @@ The source is obviously hosted here on github, and its currently [running on her
 
 # How
 ### Module
-FeedMixAlot is available via npm: `npm install feedmixalot`
+FeedMixAlot is available via npm: 
+```
+npm install feedmixalot
+```
 
 It is a single function that takes a list of rss feed urls and returns a promise that is resolved with a single rss feed contains the mashed up contents. If there is a problem at any point, the promise will be rejected with an appropriate http status code.
 
@@ -43,6 +46,11 @@ Available at http://feedmixalot.herokuapp.com.
 Takes multiple `url` arguments and dynamically creates a single rss feed.
 ```
 http://feedmixalot.herokuapp.com/?url=http://www.clearbits.net/feeds/creator/191-megan-lisa-jones.rss&url=http://www.clearbits.net/feeds/cat/pictures.rss
+```
+
+### Developing
+```
+foreman start
 ```
 
 # Contributing
