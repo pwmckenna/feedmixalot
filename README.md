@@ -30,7 +30,7 @@ var feeds = [
 ];
 var mixRequest = feedmixalot(feeds);
 mixRequest.done(function(contents) {
-  // shove the contents out the sockets
+  // shove the contents out the socket
 });
 mixRequest.fail(function(status) {
   // this will be 400 or 500 or something like that...so just shoot of a header with this as the status
