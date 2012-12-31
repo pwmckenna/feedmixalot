@@ -1,3 +1,4 @@
+"use strict";
 var feedmixalot = require('../feedmixalot.js');
 
 /*
@@ -28,7 +29,14 @@ exports['awesome'] = {
   'no args': function(test) {
     test.expect(1);
     // tests here
-    test.equal(feedmixalot.awesome(), 'awesome', 'should be awesome.');
-    test.done();
+    var emptyFeed = '<rss version="1.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>Feedmixalot</title><description>Feeds mixed together by Feedmixalot</description></channel></rss>';
+
+    feedmixalot().then(function(contents) {
+      test.equal(contents, emptyFeed, 'should be an empty rss feed');
+      test.done();
+    }, function(err) {
+      test.done();
+      console.log(err);
+    });
   }
 };
