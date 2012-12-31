@@ -5,7 +5,7 @@ Anyone maintaining/consuming multiple rss feeds.
 Rss feed aggregator - initially tuned specifically to torrent client rss feed support. All feed mashups will be public, meaning you can look around for other folks rss feeds of rss feeds and easily extend it to include all the feeds you think are missing.
 
 # Why?
-Existing RSS feed aggregators such as http://www.chimpfeedr.com/ don't generate feeds that work with torrent clients, and don't offer the level of flexibility I would like. The goal is to be able to maintain an rss feed of rss feeds, but to serve them dynamically as a single feed.
+Existing RSS feed aggregators such as http://www.chimpfeedr.com/ don't generate feeds that work with torrent clients, and don't offer the level of flexibility I would like. The goal is to be able to maintain an rss feed of rss feeds, but to serve them dynamically as a single feed. These aggregate feeds should then be given tiny urls that can be edited later and consumed themselves by feedmixalot.
 
 I would like to provide rss feed aggregators much of the functionality that libraries such as [underscore.js](http://underscorejs.org) provide.  
 * [sortBy](http://underscorejs.org/#sortBy)
