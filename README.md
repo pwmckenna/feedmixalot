@@ -16,7 +16,7 @@ I would like to provide rss feed aggregators much of the functionality that libr
 # Where?
 The source is obviously hosted here on github, and its currently [running on heroku](http://feedmixalot.herokuapp.com/?url=http://www.clearbits.net/feeds/creator/191-megan-lisa-jones.rss&url=http://www.clearbits.net/feeds/cat/pictures.rss&url=http://archive.org/services/collection-rss.php?mediatype=movies).
 
-## How
+# How
 ### Module
 FeedMixAlot is available via npm: `npm install feedmixalot`
 
@@ -45,15 +45,17 @@ Takes multiple `url` arguments and dynamically creates a single rss feed.
 http://feedmixalot.herokuapp.com/?url=http://www.clearbits.net/feeds/creator/191-megan-lisa-jones.rss&url=http://www.clearbits.net/feeds/cat/pictures.rss
 ```
 
-### Deploying on Heroku
-* Install the [Heroku Toolbelt](https://toolbelt.heroku.com/)
-
-## Contributing
+# Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [grunt](https://github.com/gruntjs/grunt).
 
-## Release History
+# Testing
+* Rss validation of output __TODO__
+* Jasmine tests consuming static rss feeds and comparing to known output __TODO__
+* Travis-ci running tests __TODO__
+
+# Release History
 _(Nothing yet)_
 
-## License
+# License
 Copyright (c) 2012 Patrick Williams  
 Licensed under the MIT license.
