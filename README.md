@@ -57,6 +57,9 @@ foreman start
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [grunt](https://github.com/gruntjs/grunt).
 
 # Testing
+```
+grunt test
+```
 * Rss validation of output __TODO__
 * Jasmine tests consuming static rss feeds and comparing to known output __TODO__
 * Travis-ci running tests __TODO__
