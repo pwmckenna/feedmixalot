@@ -1,18 +1,18 @@
 var http = require('http')
-    , url = require('url')
     , _ = require('underscore')
-    , feedmixalot = require('./feedmixalot');
+    , feedmixalot = require('./feedmixalot')
+    , express = require('express')
+    , Firebase = require('./scripts/firebase-node');
 
-var server = http.createServer(function (req, res) {
-    //url parsing
-    var query = url.parse(req.url, true).query;
-    //only support one argument so far
-    var feeds = query['url'];
-    //feeds will either be a string or an array of strings
-    //if multiple url parameters are specified
-    if(typeof feeds === 'string') {
-        feeds = [feeds];
-    }
+var app = express();
+
+app.use(express.static(__dirname + '/public/app'));
+
+app.get('/:feed', function(req, res) {
+    console.log(req.params.feed);
+
+    var feeds = [];
+
     //support for cross domain requests
     var headers = {
         'content-type': 'application/rss+xml; charset=utf-8',
@@ -36,10 +36,9 @@ var server = http.createServer(function (req, res) {
         res.end();
         return;
     });
-
 });
 
 var port = process.env.PORT || 5000;
-server.listen(port, function() {
+app.listen(port, function() {
     console.log('listening on port ' + port);    
 });
