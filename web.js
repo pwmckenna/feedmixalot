@@ -6,7 +6,7 @@ var http = require('http')
 
 var app = express();
 
-app.use(express.static(__dirname + '/public/app'));
+app.use(express.static(__dirname + '/public/dist'));
 
 app.get('/:feed', function(req, res) {
     console.log(req.params.feed);

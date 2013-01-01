@@ -27,7 +27,8 @@
         "q": "0.8.11",
         "underscore": "1.4.3",
         "libxmljs": "0.6.1",
-        "express": "3.0.5"
+        "express": "3.0.5",
+        "faye-websocket": "0.4.3"
     },
     "engines": {
         "node": "0.8.x",
