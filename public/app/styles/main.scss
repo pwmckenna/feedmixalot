@@ -1,1 +1,29 @@
 @import "compass_twitter_bootstrap";
+@import url(http://fonts.googleapis.com/css?family=Abril+Fatface);
+
+.jumbotron {
+    background-color: #333;
+    color: #f8f8f8;
+}
+.jumbotron .container {
+    background-image: url(../images/rss-feed.png);
+    background-repeat: no-repeat;
+    background-size: 120px 120px;
+    background-position:left; 
+}
+.jumbotron h1 {
+    font-family: 'Abril Fatface', cursive;
+    margin-top: 25px;
+}
+.jumbotron > .container > * {
+    margin-left: 30px;
+}
+
+.arrow {
+    background-image: url('../images/down_arrow.png');
+    background-size: 300px 50px;
+    background-position:center;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 50px;
+}

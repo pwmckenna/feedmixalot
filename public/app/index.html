@@ -17,21 +17,59 @@
         <script src="scripts/vendor/modernizr.min.js"></script>
     </head>
     <body>
-    <div class="container" style="margin-top:50px">
-        <div class="hero-unit">
-            <h1>Wotcha!</h1>
-            <p>You now have</p>
-            <ul>
-                <li>HTML5 Boilerplate</li>
-                <li>Twitter Bootstrap</li>
-                <li>Twitter Bootstrap plugins</li>
-                <li>RequireJS</li>
-                <li>Support for ES6 Modules</li>
-            </ul>
-            <p>installed.</p>
-            <h3>Enjoy coding! - Yeoman</h3>
+
+        <script type="text/template" id="app_template">
+        <header class="jumbotron subhead row" id="overview">
+            <div class="container">
+                <h1>Feed Mixalot</h1>
+                <p class="lead">Mix multiple rss feeds into a single feed. Also, easy filtering.</p>
+            </div>
+        </header>
+        <div class="container" style="margin-top:50px">
+            <div class="login"></div>
+            <div class="loggedin"></div>
         </div>
-    </div>
+        </script>
+        
+        <script type="text/template" id="logged_in_template">
+        <div class="feeds"></div>
+        <button class="btn btn-large btn-block btn-inverse addFeed" type="button">Create New Feed</button>
+        <br>
+        </script>
+
+        <script type="text/template" id="login_template">
+        <button class="btn btn-large btn-block btn-warning" type="button">Login to Facebook</button>
+        </script>
+
+        <script type="text/template" id="feed_template">
+            <div><%= count %></div>
+            <div class="input-prepend input-append">
+                <span class="add-on">Name: </span>
+                <input class="name" type="text" placeholder="<%= name %>">
+                <button class="btn removeFeed" type="button"><i class="icon-remove"></i></button>
+            </div>
+            <div class="urls">
+            </div>
+            <div class="input-append">
+                <input class="input url input-block-level" id="prependedInput" type="text" placeholder="Add Rss Feed">
+                <button class="btn addUrl" type="button"><i class="icon-plus"></i></button>
+            </div>
+            <br>
+            <div class="arrow"></div>
+            <br>
+            <div class="input-prepend input-append">
+                <span class="add-on">Url: </span>
+                <input class="span12" type="text" placeholder="<%= url %>" disabled>
+                <button class="btn copy" type="button"><i class="icon-star"></i></button>
+            </div>
+        </script>
+
+        <script type="text/template" id="url_template">
+            <div class="input-prepend input-append">
+                <input class="input-xlarge uneditable-input span12" id="disabledInput" type="text" placeholder="<%= url %>" disabled>
+                <button class="btn removeUrl" type="button"><i class="icon-remove"></i></button>
+            </div>
+        </script>
 
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
@@ -67,6 +105,10 @@
     <script src="scripts/vendor/bootstrap/bootstrap-collapse.js"></script>
     <script src="scripts/vendor/bootstrap/bootstrap-tab.js"></script>
     <!-- endbuild -->
+
+    <script type="text/javascript" src="https://cdn.firebase.com/v0/firebase.js"></script>
+    <script src='https://connect.facebook.net/en_US/all.js#xfbml=1&appId=532176763467351' type='text/javascript'></script>
+    <script src='https://cdn.firebase.com/v0/firebase-auth-client.js' type='text/javascript'></script>
 
     <!-- build:js scripts/amd-app.js -->
     <script data-main="scripts/main" src="scripts/vendor/require.js"></script>

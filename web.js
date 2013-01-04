@@ -2,39 +2,49 @@ var http = require('http')
     , _ = require('underscore')
     , feedmixalot = require('./feedmixalot')
     , express = require('express')
-    , Firebase = require('./scripts/firebase-node');
+    , Firebase = require('./scripts/firebase-node')
+    , FirebaseTokenGenerator = require("./scripts/firebase-token-generator-node.js");
 
 var app = express();
+var tokenGenerator = new FirebaseTokenGenerator('ukmvXXO9ivPn9msTl7JkFC0672s9cq1H2u3enW6k');
+var token = tokenGenerator.createToken({}, {
+    admin: true
+});
+var firebase = new Firebase('https://feedmixalot.firebaseIO.com/feeds');
+firebase.auth(token);
 
 app.use(express.static(__dirname + '/public/dist'));
 
 app.get('/:feed', function(req, res) {
     console.log(req.params.feed);
 
-    var feeds = [];
+    var feed = firebase.child(req.params.feed + '/urls');
+    feed.on('value', function(child) {
+        var urls = _.pluck(_.values(child.val()), 'url');
 
-    //support for cross domain requests
-    var headers = {
-        'content-type': 'application/rss+xml; charset=utf-8',
-        'Access-Control-Allow-Origin': '*'
-    };
-    //do a bit of url argument validation
-    if(!_.isArray(feeds)) {
-        res.writeHead(500, headers);
-        res.end();
-        return;
-    }
-
-    //get all the url contents and glob it into a single xml document
-    var aggregateRequest = feedmixalot(feeds);
-    aggregateRequest.then(function(aggregate) {
-        res.writeHead(200, headers);
-        var body = aggregate;
-        res.end(body);
-    }, function(err) {
-        res.writeHead(err, headers);
-        res.end();
-        return;
+        //support for cross domain requests
+        var headers = {
+            'content-type': 'application/rss+xml; charset=utf-8',
+            'Access-Control-Allow-Origin': '*'
+        };
+        //do a bit of url argument validation
+        if(!_.isArray(urls)) {
+            res.writeHead(500, headers);
+            res.end();
+            return;
+        }
+        console.log(urls);
+        //get all the url contents and glob it into a single xml document
+        var aggregateRequest = feedmixalot(urls);
+        aggregateRequest.then(function(aggregate) {
+            res.writeHead(200, headers);
+            var body = aggregate;
+            res.end(body);
+        }, function(err) {
+            res.writeHead(err, headers);
+            res.end();
+            return;
+        });
     });
 });
 
