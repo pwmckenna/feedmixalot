@@ -6,14 +6,21 @@ var http = require('http')
     , FirebaseTokenGenerator = require("./scripts/firebase-token-generator-node.js");
 
 var app = express();
-var tokenGenerator = new FirebaseTokenGenerator('ukmvXXO9ivPn9msTl7JkFC0672s9cq1H2u3enW6k');
+var tokenGenerator = new FirebaseTokenGenerator(process.env.FIREBASE_SECRET);
 var token = tokenGenerator.createToken({}, {
     admin: true
 });
-var firebase = new Firebase('https://feedmixalot.firebaseIO.com/feeds');
-firebase.auth(token);
 
-app.use(express.static(__dirname + '/public/dist'));
+var onFirebaseLogin = function(success) {
+    if(success) {
+        console.log('firebase login success');
+    } else {
+        console.log('firebase login failure');
+    }
+});
+
+var firebase = new Firebase('https://feedmixalot.firebaseIO.com/feeds');
+firebase.auth(token, onFirebaseLogin);
 
 app.get('/:feed', function(req, res) {
     console.log(req.params.feed);
