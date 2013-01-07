@@ -17,7 +17,7 @@ var onFirebaseLogin = function(success) {
     } else {
         console.log('firebase login failure');
     }
-});
+};
 
 var firebase = new Firebase('https://feedmixalot.firebaseIO.com/feeds');
 firebase.auth(token, onFirebaseLogin);
