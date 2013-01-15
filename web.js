@@ -22,28 +22,29 @@ var onFirebaseLogin = function(success) {
 var firebase = new Firebase('https://feedmixalot.firebaseIO.com/');
 firebase.auth(token, onFirebaseLogin);
 
+var headers = {
+    'content-type': 'application/rss+xml; charset=utf-8',
+    'Access-Control-Allow-Origin': '*'
+};
+
 app.get('/:link', function(req, res) {
     console.log(req.params.link);
-
     var link = firebase.child('links').child(req.params.link);
 
     link.once('value', function(linkSnapshot) {
-        console.log('link value', linkSnapshot.val());
+        if(!_.isObject(linkSnapshot.val())) {
+            res.writeHead(500, headers);
+            res.end();
+            return;
+        }
+
         var user = linkSnapshot.val().user;
         var feed = linkSnapshot.val().feed;
 
-        console.log('user', user);
-        console.log('feed', feed);
-
         firebase.child('users').child(user).child('feeds').child(feed).child('urls').once('value', function(child) {
-            console.log('child val', child.val());
             var urls = _.pluck(_.values(child.val()), 'url');
 
             //support for cross domain requests
-            var headers = {
-                'content-type': 'application/rss+xml; charset=utf-8',
-                'Access-Control-Allow-Origin': '*'
-            };
             //do a bit of url argument validation
             if(!_.isArray(urls)) {
                 res.writeHead(500, headers);
