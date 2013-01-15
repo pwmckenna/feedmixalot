@@ -48,7 +48,7 @@ var appendChildNode = function(parent, child) {
     if(name === 'item' || name === 'link') {
         // The items should all be included as is.
         parent.addChild(child);
-    } else if(name === 'description' || name === 'title') {
+    } else if(name === 'description') {
         // Our generated feed was assigned these when it was created. 
         // lets mixalot! ...ie, merge the text of like elements
         var existingText = parent.get(name).text();
@@ -66,7 +66,7 @@ var appendChildNode = function(parent, child) {
 //     ...
 //   </channel>
 // </rss>
-var aggregateRssFeedContents = function(feedContents) {
+var aggregateRssFeedContents = function(feedContents, title) {
     var ret = q.defer();
     var compiled = new libxmljs.Document();
     compiledRss = compiled.node('rss');
@@ -76,7 +76,7 @@ var aggregateRssFeedContents = function(feedContents) {
         'xmlns:media': 'http://search.yahoo.com/mrss/'
     });
     compiledChannel = compiledRss.node('channel');
-    compiledChannel.node('title', 'Feedmixalot');
+    compiledChannel.node('title', title);
     compiledChannel.node('description', 'Feeds mixed together by Feedmixalot')
 
     // Parse the xml document of each
@@ -99,13 +99,18 @@ var aggregateRssFeedContents = function(feedContents) {
 };
 
 // Request the urls, the hand off the results for processing
-var aggregateRssFeedUrls = function(feeds) {
+var aggregateRssFeedUrls = function(options) {
+    var feeds = options.feeds;
+    var title = options.title;
+
     var requests = _.map(feeds, function(feed) { 
         return get(feed); 
     });
     return q.all(requests)
         .then(parseHttpBodies)
-        .then(aggregateRssFeedContents);    
+        .then(function(feedContents) {
+            return aggregateRssFeedContents(feedContents, title);
+        });
 };
 
 module.exports = aggregateRssFeedUrls;

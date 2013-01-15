@@ -41,8 +41,9 @@ app.get('/:link', function(req, res) {
         var user = linkSnapshot.val().user;
         var feed = linkSnapshot.val().feed;
 
-        firebase.child('users').child(user).child('feeds').child(feed).child('urls').once('value', function(child) {
-            var urls = _.pluck(_.values(child.val()), 'url');
+        firebase.child('users').child(user).child('feeds').child(feed).once('value', function(feedSnapshot) {
+            var name = feedSnapshot.val().name;
+            var urls = _.pluck(_.values(feedSnapshot.val().urls), 'url');
 
             //support for cross domain requests
             //do a bit of url argument validation
@@ -53,7 +54,10 @@ app.get('/:link', function(req, res) {
             }
             console.log(urls);
             //get all the url contents and glob it into a single xml document
-            var aggregateRequest = feedmixalot(urls);
+            var aggregateRequest = feedmixalot({
+                urls: urls,
+                title: name
+            });
             aggregateRequest.then(function(aggregate) {
                 res.writeHead(200, headers);
                 var body = aggregate;
