@@ -100,7 +100,7 @@ var aggregateRssFeedContents = function(feedContents, title) {
 
 // Request the urls, the hand off the results for processing
 var aggregateRssFeedUrls = function(options) {
-    var feeds = options.feeds;
+    var feeds = options.urls;
     var title = options.title;
 
     var requests = _.map(feeds, function(feed) { 
