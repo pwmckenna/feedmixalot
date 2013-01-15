@@ -19,38 +19,49 @@ var onFirebaseLogin = function(success) {
     }
 };
 
-var firebase = new Firebase('https://feedmixalot.firebaseIO.com/feeds');
+var firebase = new Firebase('https://feedmixalot.firebaseIO.com/');
 firebase.auth(token, onFirebaseLogin);
 
-app.get('/:feed', function(req, res) {
-    console.log(req.params.feed);
+app.get('/:link', function(req, res) {
+    console.log(req.params.link);
 
-    var feed = firebase.child(req.params.feed + '/urls');
-    feed.on('value', function(child) {
-        var urls = _.pluck(_.values(child.val()), 'url');
+    var link = firebase.child('links').child(req.params.link);
 
-        //support for cross domain requests
-        var headers = {
-            'content-type': 'application/rss+xml; charset=utf-8',
-            'Access-Control-Allow-Origin': '*'
-        };
-        //do a bit of url argument validation
-        if(!_.isArray(urls)) {
-            res.writeHead(500, headers);
-            res.end();
-            return;
-        }
-        console.log(urls);
-        //get all the url contents and glob it into a single xml document
-        var aggregateRequest = feedmixalot(urls);
-        aggregateRequest.then(function(aggregate) {
-            res.writeHead(200, headers);
-            var body = aggregate;
-            res.end(body);
-        }, function(err) {
-            res.writeHead(err, headers);
-            res.end();
-            return;
+    link.once('value', function(linkSnapshot) {
+        console.log('link value', linkSnapshot.val());
+        var user = linkSnapshot.val().user;
+        var feed = linkSnapshot.val().feed;
+
+        console.log('user', user);
+        console.log('feed', feed);
+
+        firebase.child('users').child(user).child('feeds').child(feed).child('urls').once('value', function(child) {
+            console.log('child val', child.val());
+            var urls = _.pluck(_.values(child.val()), 'url');
+
+            //support for cross domain requests
+            var headers = {
+                'content-type': 'application/rss+xml; charset=utf-8',
+                'Access-Control-Allow-Origin': '*'
+            };
+            //do a bit of url argument validation
+            if(!_.isArray(urls)) {
+                res.writeHead(500, headers);
+                res.end();
+                return;
+            }
+            console.log(urls);
+            //get all the url contents and glob it into a single xml document
+            var aggregateRequest = feedmixalot(urls);
+            aggregateRequest.then(function(aggregate) {
+                res.writeHead(200, headers);
+                var body = aggregate;
+                res.end(body);
+            }, function(err) {
+                res.writeHead(err, headers);
+                res.end();
+                return;
+            });
         });
     });
 });
