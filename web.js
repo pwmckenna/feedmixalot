@@ -11,11 +11,11 @@ var token = tokenGenerator.createToken({}, {
     admin: true
 });
 
-var onFirebaseLogin = function(success) {
-    if(success) {
-        console.log('firebase login success');
+var onFirebaseLogin = function(error, dummy) {
+    if(error) {
+        console.log('firebase login failure', error);
     } else {
-        console.log('firebase login failure');
+        console.log('firebase login success');
     }
 };
 
