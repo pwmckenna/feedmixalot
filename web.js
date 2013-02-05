@@ -32,6 +32,7 @@ var trackTorrentLinks = function(node, token) {
                 apiUrl, 
                 function(error, result, body) {
                     console.log(error, body);//console.log('api token result', error, result.statusCode, body);
+                    node.attr('url', body);
                     d.resolve();
                 }
             );
