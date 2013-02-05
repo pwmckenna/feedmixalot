@@ -26,7 +26,7 @@ var trackTorrentLinks = function(node, token) {
         console.log('converting', url);
         ret = ret.then(function() {
             var d = new q.defer();
-            var apiUrl = 'http://localhost:5050/?src=' + url + '&token=' + token;
+            var apiUrl = 'http://api.todium.com/?src=' + url + '&token=' + token;
             console.log(apiUrl);
             request.get(
                 apiUrl, 
