@@ -123,7 +123,7 @@ var headers = {
 
 app.get('/:link', function(req, res) {
     console.log(req.params.link);
-    var link = firebase.child('links').child(req.params.link);
+    var link = firebase.child('rss').child(req.params.link);
 
     link.once('value', function(linkSnapshot) {
         console.log('link value', link, linkSnapshot.val());
