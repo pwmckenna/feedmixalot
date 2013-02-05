@@ -4,10 +4,10 @@
 // Copyright (c) 2012 Patrick Williams
 // Licensed under the MIT license.
 
-var request = require('request')
-    , _ = require('underscore')
-    , q = require('q')
-    , libxmljs = require("libxmljs");
+var request = require('request');
+var _ = require('underscore');
+var q = require('q');
+var libxmljs = require("libxmljs");
 
 // Turns the standard node function signature with a callback argument
 // into a function that returns a deferred object
@@ -92,9 +92,9 @@ var aggregateRssFeedContents = function(feedContents, title) {
         }
         var channel = channels[0];
 
-        _.each(channel.childNodes(), _.bind(appendChildNode, this, compiledChannel));
+        _.each(channel.childNodes(), _.partial(appendChildNode, compiledChannel));
     });
-    ret.resolve(compiledRss.toString());
+    ret.resolve(compiledRss);
     return ret.promise;
 };
 

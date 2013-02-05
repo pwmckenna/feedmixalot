@@ -1,15 +1,50 @@
-var http = require('http')
-    , _ = require('underscore')
-    , feedmixalot = require('./feedmixalot')
-    , express = require('express')
-    , Firebase = require('./scripts/firebase-node')
-    , FirebaseTokenGenerator = require("./scripts/firebase-token-generator-node.js");
+var http = require('http');
+var _ = require('underscore');
+var feedmixalot = require('./feedmixalot');
+var express = require('express');
+var Firebase = require('./scripts/firebase-node')
+var FirebaseTokenGenerator = require("./scripts/firebase-token-generator-node.js");
+var q = require('q');
+var request = require('request');
 
 var app = express();
 var tokenGenerator = new FirebaseTokenGenerator(process.env.FIREBASE_SECRET);
 var token = tokenGenerator.createToken({}, {
     admin: true
 });
+
+var trackTorrentLinks = function(node, token) {
+    var d = new q.defer();
+    d.resolve();
+    var ret = d.promise;
+
+    if(node.name() === 'enclosure' && 
+        node.attr('type') && node.attr('type').value() === 'application/x-bittorrent' && 
+        node.attr('url')
+    ) {
+        var url = node.attr('url').value();
+        console.log('converting', url);
+        ret = ret.then(function() {
+            var d = new q.defer();
+            var apiUrl = 'http://localhost:5050/?src=' + url + '&token=' + token;
+            console.log(apiUrl);
+            request.get(
+                apiUrl, 
+                function(error, result, body) {
+                    console.log(error, body);//console.log('api token result', error, result.statusCode, body);
+                    d.resolve();
+                }
+            );
+            return d.promise;
+        });
+    } 
+
+    _.each(node.childNodes(), function(child) {
+        ret = ret.then(_.partial(trackTorrentLinks, child, token));
+    });
+
+    return ret;
+}
 
 var onFirebaseLogin = function(error, dummy) {
     if(error) {
@@ -19,7 +54,7 @@ var onFirebaseLogin = function(error, dummy) {
     }
 };
 
-var firebase = new Firebase('https://feedmixalot.firebaseIO.com/');
+var firebase = new Firebase('https://featuredcontent.firebaseIO.com/');
 firebase.auth(token, onFirebaseLogin);
 
 var headers = {
@@ -41,9 +76,14 @@ app.get('/:link', function(req, res) {
         var user = linkSnapshot.val().user;
         var feed = linkSnapshot.val().feed;
 
-        firebase.child('users').child(user).child('feeds').child(feed).once('value', function(feedSnapshot) {
-            var name = feedSnapshot.val().name;
-            var urls = _.pluck(_.values(feedSnapshot.val().urls), 'url');
+        firebase.child('users').child(user.provider).child(user.id).once('value', function(userSnapshot) {
+            var feedInfo = userSnapshot.val()['feeds'][feed];
+            var userToken = userSnapshot.val()['token'];
+            console.log('feedInfo', feedInfo);
+            console.log('userToken', userToken);
+
+            var name = feedInfo.name;
+            var urls = _.pluck(_.values(feedInfo.urls), 'url');
 
             //support for cross domain requests
             //do a bit of url argument validation
@@ -59,9 +99,11 @@ app.get('/:link', function(req, res) {
                 title: name
             });
             aggregateRequest.then(function(aggregate) {
-                res.writeHead(200, headers);
-                var body = aggregate;
-                res.end(body);
+                trackTorrentLinks(aggregate, userToken).then(function() {
+                    res.writeHead(200, headers);
+                    var body = aggregate.toString();
+                    res.end(body);                    
+                })
             }, function(err) {
                 res.writeHead(err, headers);
                 res.end();
