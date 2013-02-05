@@ -49,6 +49,7 @@ var cachedGet = function(cache, key, request) {
             defer.resolve(cachedUrlValue);
         } else {
             get(request).then(function(response) {
+                console.log(response);
                 console.log('storing cached response', response.body);
                 cachedUrl.set(response.body);
                 defer.resolve(response.body);
