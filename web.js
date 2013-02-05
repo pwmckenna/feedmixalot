@@ -13,7 +13,7 @@ var token = tokenGenerator.createToken({}, {
     admin: true
 });
 
-var trackTorrentLinks = function(node, token) {
+var trackTorrentLinks = function(node, token, feedName) {
     var d = new q.defer();
     d.resolve();
     var ret = d.promise;
@@ -24,12 +24,25 @@ var trackTorrentLinks = function(node, token) {
     ) {
         var url = node.attr('url').value();
         console.log('converting', url);
+
+        var labels = [
+            'feedmixalot', 
+            feedName,
+            url
+        ];
+
         ret = ret.then(function() {
             var d = new q.defer();
-            var apiUrl = 'http://api.todium.com/?src=' + url + '&token=' + token;
-            console.log(apiUrl);
+            var apiUrl = 'http://api.todium.com';
             request.get(
-                apiUrl, 
+                {
+                    url: apiUrl,
+                    qs: {
+                        src: url,
+                        token: token,
+                        labels: labels
+                    }
+                },
                 function(error, result, body) {
                     console.log(error, body);//console.log('api token result', error, result.statusCode, body);
                     node.attr('url', body);
@@ -41,7 +54,7 @@ var trackTorrentLinks = function(node, token) {
     } 
 
     _.each(node.childNodes(), function(child) {
-        ret = ret.then(_.partial(trackTorrentLinks, child, token));
+        ret = ret.then(_.partial(trackTorrentLinks, child, token, feedName));
     });
 
     return ret;
@@ -106,7 +119,7 @@ app.get('/:link', function(req, res) {
                 title: name
             });
             aggregateRequest.then(function(aggregate) {
-                trackTorrentLinks(aggregate, userToken).then(function() {
+                trackTorrentLinks(aggregate, userToken, feed).then(function() {
                     res.writeHead(200, headers);
                     var body = aggregate.toString();
                     res.end(body);                    
