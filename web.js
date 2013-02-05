@@ -13,7 +13,35 @@ var token = tokenGenerator.createToken({}, {
     admin: true
 });
 
-var trackTorrentLinks = function(node, token, feedName) {
+// Turns the standard node function signature with a callback argument
+// into a function that returns a deferred object
+var promisify = function(nodeAsyncFn, context) {
+  return function() {
+    var defer = new q.defer()
+      , args = Array.prototype.slice.call(arguments);
+
+    args.push(function(err, val) {
+      if (err !== null) {
+        return defer.reject(err);
+      }
+
+      return defer.resolve(val);
+    });
+
+    nodeAsyncFn.apply(context || {}, args);
+
+    return defer.promise;
+  };
+};
+// Wrap our get requests so it plays nicely with all our other
+// defered object code
+var get = promisify(request.get);
+
+var cachedGet = function(cache, options) {
+    return get(options);
+}
+
+var trackTorrentLinks = function(node, token, feedName, cache) {
     var d = new q.defer();
     d.resolve();
     var ret = d.promise;
@@ -32,29 +60,23 @@ var trackTorrentLinks = function(node, token, feedName) {
         ];
 
         ret = ret.then(function() {
-            var d = new q.defer();
             var apiUrl = 'http://api.todium.com';
-            request.get(
-                {
-                    url: apiUrl,
-                    qs: {
-                        src: url,
-                        token: token,
-                        labels: labels
-                    }
-                },
-                function(error, result, body) {
-                    console.log(error, body);
-                    node.attr('url', body);
-                    d.resolve();
+            var trackRequest = cachedGet(cache, {
+                url: apiUrl,
+                qs: {
+                    src: url,
+                    token: token,
+                    labels: labels
                 }
-            );
-            return d.promise;
+            });
+            return trackRequest.then(function(body) {
+                node.attr('url', body);
+            });
         });
     } 
 
     _.each(node.childNodes(), function(child) {
-        ret = ret.then(_.partial(trackTorrentLinks, child, token, feedName));
+        ret = ret.then(_.partial(trackTorrentLinks, child, token, feedName, cache));
     });
 
     return ret;
@@ -118,8 +140,13 @@ app.get('/:link', function(req, res) {
                 urls: urls,
                 title: name
             });
+
+            var cache = {
+
+            };
+
             aggregateRequest.then(function(aggregate) {
-                trackTorrentLinks(aggregate, userToken, name).then(function() {
+                trackTorrentLinks(aggregate, userToken, name, cache).then(function() {
                     res.writeHead(200, headers);
                     var body = aggregate.toString();
                     res.end(body);                    
