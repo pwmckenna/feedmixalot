@@ -44,7 +44,7 @@ var trackTorrentLinks = function(node, token, feedName) {
                     }
                 },
                 function(error, result, body) {
-                    console.log(error, body);//console.log('api token result', error, result.statusCode, body);
+                    console.log(error, body);
                     node.attr('url', body);
                     d.resolve();
                 }
@@ -119,7 +119,7 @@ app.get('/:link', function(req, res) {
                 title: name
             });
             aggregateRequest.then(function(aggregate) {
-                trackTorrentLinks(aggregate, userToken, feed).then(function() {
+                trackTorrentLinks(aggregate, userToken, name).then(function() {
                     res.writeHead(200, headers);
                     var body = aggregate.toString();
                     res.end(body);                    
