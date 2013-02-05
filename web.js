@@ -2,8 +2,8 @@ var http = require('http');
 var _ = require('underscore');
 var feedmixalot = require('./feedmixalot');
 var express = require('express');
-var Firebase = require('./scripts/firebase-node')
-var FirebaseTokenGenerator = require("./scripts/firebase-token-generator-node.js");
+var Firebase = require('./lib/firebase-node')
+var FirebaseTokenGenerator = require("./lib/firebase-token-generator-node.js");
 var q = require('q');
 var request = require('request');
 
