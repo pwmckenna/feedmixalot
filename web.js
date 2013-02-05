@@ -76,6 +76,9 @@ app.get('/:link', function(req, res) {
         var user = linkSnapshot.val().user;
         var feed = linkSnapshot.val().feed;
 
+        console.log('user', user);
+        console.log('feed', feed);
+
         firebase.child('users').child(user.provider).child(user.id).once('value', function(userSnapshot) {
             var feedInfo = userSnapshot.val()['feeds'][feed];
             var userToken = userSnapshot.val()['token'];
