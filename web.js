@@ -37,11 +37,33 @@ var promisify = function(nodeAsyncFn, context) {
 // defered object code
 var get = promisify(request.get);
 
-var cachedGet = function(cache, options) {
-    return get(options);
+var cachedGet = function(cache, key, request) {
+    console.log('cachedGet', cache, key, request);
+    var defer = new q.defer();
+    var promise = defer.promise;
+    var cachedUrl = cache.child(key);
+    cachedUrl.once('value', function(valueSnapshot) {
+        var cachedUrlValue = valueSnapshot.val();
+        console.log('cachedGet value', cachedUrlValue);
+        if(cachedUrlValue) {
+            defer.resolve(cachedUrlValue);
+        } else {
+            get(request).then(function(response) {
+                console.log('storing cached response', response.body);
+                cachedUrl.set(response.body);
+                defer.resolve(response.body);
+            }, function(err) {
+                console.log('storing cached response failed', err);
+                defer.reject(err);
+            });
+        }
+    });
+
+    return promise;
 }
 
 var trackTorrentLinks = function(node, token, feedName, cache) {
+    console.log('trackTorrentLinks');
     var d = new q.defer();
     d.resolve();
     var ret = d.promise;
@@ -61,7 +83,8 @@ var trackTorrentLinks = function(node, token, feedName, cache) {
 
         ret = ret.then(function() {
             var apiUrl = 'http://api.todium.com';
-            var trackRequest = cachedGet(cache, {
+            var key = new Buffer(url).toString('base64')
+            var trackRequest = cachedGet(cache, key, {
                 url: apiUrl,
                 qs: {
                     src: url,
@@ -141,9 +164,7 @@ app.get('/:link', function(req, res) {
                 title: name
             });
 
-            var cache = {
-
-            };
+            var cache = link.child('cache');
 
             aggregateRequest.then(function(aggregate) {
                 trackTorrentLinks(aggregate, userToken, name, cache).then(function() {
