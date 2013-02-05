@@ -68,6 +68,7 @@ app.get('/:link', function(req, res) {
     var link = firebase.child('links').child(req.params.link);
 
     link.once('value', function(linkSnapshot) {
+        console.log('link value', link, linkSnapshot.val());
         if(!_.isObject(linkSnapshot.val())) {
             res.writeHead(500, headers);
             res.end();
@@ -81,6 +82,8 @@ app.get('/:link', function(req, res) {
         console.log('feed', feed);
 
         firebase.child('users').child(user.provider).child(user.id).once('value', function(userSnapshot) {
+            console.log('user value', user)
+
             var feedInfo = userSnapshot.val()['feeds'][feed];
             var userToken = userSnapshot.val()['token'];
             console.log('feedInfo', feedInfo);
@@ -93,7 +96,7 @@ app.get('/:link', function(req, res) {
             //do a bit of url argument validation
             if(!_.isArray(urls)) {
                 res.writeHead(500, headers);
-                res.end();
+                res.end('urls are not an array');
                 return;
             }
             console.log(urls);
@@ -110,7 +113,7 @@ app.get('/:link', function(req, res) {
                 })
             }, function(err) {
                 res.writeHead(err, headers);
-                res.end();
+                res.end('failed to aggreate requests');
                 return;
             });
         });
