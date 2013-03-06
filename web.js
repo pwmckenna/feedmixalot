@@ -168,11 +168,11 @@ app.get('/:link', function(req, res) {
             var cache = link.child('cache');
 
             aggregateRequest.then(function(aggregate) {
-                trackTorrentLinks(aggregate, userToken, name, cache).then(function() {
+                //trackTorrentLinks(aggregate, userToken, name, cache).then(function() {
                     res.writeHead(200, headers);
                     var body = aggregate.toString();
-                    res.end(body);                    
-                })
+                    res.end(body);
+                //});
             }, function(err) {
                 res.writeHead(err, headers);
                 res.end('failed to aggreate requests');
